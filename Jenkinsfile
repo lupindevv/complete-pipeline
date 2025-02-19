@@ -1,33 +1,36 @@
 pipeline {
     agent any
+
     tools {
         maven "maven-build"
     }
 
     stages {
-        stage('build jar file') {
+        stage('Build JAR File') {
             steps {
                 script {
-                    echo 'building jar file'
+                    echo 'Building JAR file...'
                     sh 'mvn package'
+                }
             }
         }
-        }
-        stage('build docker image') {
+
+        stage('Build Docker Image & Push to Docker Hub') {
             steps {
                 script {
-                    echo 'building docker image'
-                    withCredentials([usernamePassword(credentialsID: 'dockerhubs', passwordVarialbe: 'PASS', usernameVarialbe: 'USER')]{
+                    echo 'Building Docker image...'
+                    withCredentials([usernamePassword(credentialsId: 'dockerhubs', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                         sh 'docker build -t alexthm1/demo-app:jma-2.0 .'
-                        sh 'docker login - u $USER -p $PASS'
+                        sh 'docker login -u $USER -p $PASS'
                         sh 'docker push alexthm1/demo-app:jma-2.0'
-                    })
+                    }
+                }
             }
         }
-        }
-        stage('deploy') {
+
+        stage('Deploy') {
             steps {
-                echo 'deploying'
+                echo 'Deploying the application...'
             }
         }
     }
