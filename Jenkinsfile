@@ -1,4 +1,4 @@
-def gv
+def gv = null  // Initialize gv
 
 pipeline {
     agent any
@@ -8,13 +8,14 @@ pipeline {
     }
 
     stages {
-        stage('init') {
+        stage('Init') {
             steps {
                 script {
                     gv = load "script.groovy"
                 }
             }
         }
+
         stage('Build JAR File') {
             steps {
                 script {
@@ -26,11 +27,9 @@ pipeline {
         stage('Build Docker Image & Push to Docker Hub') {
             steps {
                 script {
-                     gv.buildDockerimage()
-                    }
+                    gv.buildDockerImage()  // Ensure correct function name
                 }
             }
         }
-
     }
-
+}
