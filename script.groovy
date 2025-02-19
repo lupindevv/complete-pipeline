@@ -14,3 +14,4 @@ def buildDockerImage() {
         }
     }
 }
+return this
