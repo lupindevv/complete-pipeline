@@ -1,4 +1,5 @@
-def gv = null  // Initialize gv
+@Library('jenkins-sl')_
+
 
 pipeline {
     agent any
@@ -8,18 +9,12 @@ pipeline {
     }
 
     stages {
-        stage('Init') {
-            steps {
-                script {
-                    gv = load "script.groovy"
-                }
-            }
-        }
+        
 
         stage('Build JAR File') {
             steps {
                 script {
-                    gv.buildJar()
+                    buildJar()
                 }
             }
         }
@@ -27,7 +22,7 @@ pipeline {
         stage('Build Docker Image & Push to Docker Hub') {
             steps {
                 script {
-                    gv.buildDockerImage()  // Ensure correct function name
+                    buildImage()  // Ensure correct function name
                 }
             }
         }
