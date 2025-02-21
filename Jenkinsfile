@@ -8,6 +8,12 @@ pipeline {
     }
 
     stages {
+        stage('Testing webhook') {
+            steps {
+                echo 'Testing webhook'
+                }
+            }
+        }
         stage('Init') {
             steps {
                 script {
