@@ -19,7 +19,7 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image & Push to Docker Hub') {
+        stage('Build Docker Image & Push to Docker Hubs') {
             steps {
                 script {
                     buildImage 'alexthm1/demo-app:jma-3.1'  // Ensure correct function name
