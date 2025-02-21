@@ -8,13 +8,8 @@ pipeline {
     }
 
     stages {
-        stage('Testing webhook') {
-            steps {
-                echo 'Testing webhook'
-                }
-            }
-        }
-        stage('Init') {
+        
+        stage('Init - Testing Webhook') {
             steps {
                 script {
                     gv = load "script.groovy"
