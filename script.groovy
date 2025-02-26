@@ -43,7 +43,7 @@ def buildDockerImage(String projectName = null, String version = null) {
     
     echo "Building Docker image for project: ${projectName} with JAR: ${jarPath} and version: ${version}"
     
-    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+    withCredentials([usernamePassword(credentialsId: 'dockerhubs', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
         sh "docker build -t alexthm1/demo-app:jma-${version} ."
         sh "echo $PASS | docker login -u $USER --password-stdin"
         sh "docker push alexthm1/demo-app:jma-${version}"
