@@ -40,7 +40,7 @@ pipeline {
                     def newVersion = incrementVersion(
                         versionFile: 'pom.xml',
                         versionPattern: '<version>(\\d+)\\.(\\d+)\\.(\\d+)</version>',
-                        incrementType: 'patch'
+                        incrementType: 'major'
                     )
                     
                     // Create reference to the JAR file
