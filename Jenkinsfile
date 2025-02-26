@@ -17,28 +17,50 @@ pipeline {
         stage('Version Management') {
             steps {
                 script {
-                    // Extract project name from pom.xml safely
+                    // Read POM file
                     def pomContent = readFile('pom.xml')
-                    def projectName = ''
-                    def projectNameMatch = (pomContent =~ '<artifactId>(.*?)</artifactId>')
-                    if (projectNameMatch.find()) {
-                        projectName = projectNameMatch.group(1)
-                        // Ensure matcher is not stored in a variable that persists
-                        projectNameMatch = null
-                    } else {
-                        error "Could not find artifactId in pom.xml"
+                    
+                    // Extract current version
+                    def versionMatch = (pomContent =~ '<version>(\\d+)\\.(\\d+)\\.(\\d+)</version>')
+                    def major = 1
+                    def minor = 0
+                    def patch = 0
+                    
+                    if (versionMatch.find()) {
+                        major = versionMatch.group(1).toInteger()
+                        minor = versionMatch.group(2).toInteger()
+                        patch = versionMatch.group(3).toInteger()
+                        versionMatch = null // Clear matcher
                     }
                     
-                    // Use the shared library to increment version
-                    def newVersion = incrementVersion(
-                        versionFile: 'pom.xml',
-                        versionPattern: '<version>(\\d+)\\.(\\d+)\\.(\\d+)</version>',
-                        incrementType: 'major'
-                    )
+                    echo "Current version: ${major}.${minor}.${patch}"
                     
-                    // Store version and project name for later use
+                    // Increment major version
+                    major++
+                    minor = 0
+                    patch = 0
+                    
+                    def newVersion = "${major}.${minor}.${patch}"
+                    echo "New version: ${newVersion}"
+                    
+                    // Update POM file - use replaceFirst to only update the project version, not dependency versions
+                    def updatedContent = pomContent.replaceFirst("<version>\\d+\\.\\d+\\.\\d+</version>", "<version>${newVersion}</version>")
+                    writeFile file: 'pom.xml', text: updatedContent
+                    
+                    // Extract project name
+                    def projectNameMatch = (pomContent =~ '<artifactId>(.*?)</artifactId>')
+                    def projectName = 'java-maven-app' // Default
+                    
+                    if (projectNameMatch.find()) {
+                        projectName = projectNameMatch.group(1)
+                        projectNameMatch = null // Clear matcher
+                    }
+                    
+                    // Store as environment variables
                     env.APP_VERSION = newVersion
                     env.PROJECT_NAME = projectName
+                    
+                    echo "Updated to version ${newVersion} for project ${projectName}"
                 }
             }
         }
@@ -52,13 +74,9 @@ pipeline {
         stage('Create JAR Reference') {
             steps {
                 script {
-                    // Create reference to the JAR file AFTER building with the new version
-                    jarReference(
-                        jarBaseName: env.PROJECT_NAME,
-                        version: env.APP_VERSION,
-                        targetPath: 'target',
-                        artifactPath: 'target'
-                    )
+                    // Create reference to the JAR file
+                    sh "echo target/${env.PROJECT_NAME}-${env.APP_VERSION}.jar > target/jarReference.txt"
+                    echo "Created reference to JAR: ${env.PROJECT_NAME}-${env.APP_VERSION}.jar"
                 }
             }
         }
