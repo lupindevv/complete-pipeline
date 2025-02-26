@@ -24,12 +24,14 @@ pipeline {
         stage('Version Management') {
             steps {
                 script {
-                    // Extract project name from pom.xml manually
+                    // Extract project name from pom.xml safely
                     def pomContent = readFile('pom.xml')
-                    def projectNameMatcher = pomContent =~ '<artifactId>(.*?)</artifactId>'
                     def projectName = ''
-                    if (projectNameMatcher.find()) {
-                        projectName = projectNameMatcher[0][1]
+                    def projectNameMatch = (pomContent =~ '<artifactId>(.*?)</artifactId>')
+                    if (projectNameMatch.find()) {
+                        projectName = projectNameMatch.group(1)
+                        // Ensure matcher is not stored in a variable that persists
+                        projectNameMatch = null
                     } else {
                         error "Could not find artifactId in pom.xml"
                     }

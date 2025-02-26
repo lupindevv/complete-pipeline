@@ -12,9 +12,11 @@ def buildDockerImage(String projectName = null, String version = null) {
     // If project name wasn't passed, try to read it from pom.xml
     if (!projectName) {
         def pom = readFile('pom.xml')
-        def matcher = pom =~ '<artifactId>(.*?)</artifactId>'
-        if (matcher.find()) {
-            projectName = matcher[0][1]
+        def projectNameMatch = (pom =~ '<artifactId>(.*?)</artifactId>')
+        if (projectNameMatch.find()) {
+            projectName = projectNameMatch.group(1)
+            // Ensure matcher is not stored in a variable that persists
+            projectNameMatch = null
         } else {
             error "Could not find artifactId in pom.xml"
         }
@@ -23,9 +25,11 @@ def buildDockerImage(String projectName = null, String version = null) {
     // If version wasn't passed, try to read it from pom.xml
     if (!version) {
         def pom = readFile('pom.xml')
-        def matcher = pom =~ '<version>(.*?)</version>'
-        if (matcher.find()) {
-            version = matcher[0][1]
+        def versionMatch = (pom =~ '<version>(.*?)</version>')
+        if (versionMatch.find()) {
+            version = versionMatch.group(1)
+            // Ensure matcher is not stored in a variable that persists
+            versionMatch = null
         } else {
             error "Could not find version in pom.xml"
         }
