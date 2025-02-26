@@ -22,7 +22,7 @@ pipeline {
                     
                     // Extract current version
                     def versionMatch = (pomContent =~ '<version>(\\d+)\\.(\\d+)\\.(\\d+)</version>')
-                    def major = 1
+                    def major = 3
                     def minor = 0
                     def patch = 0
                     
