@@ -1,4 +1,4 @@
-@Library('my-shared-library') _
+@Library('jenkins-sl') _
 
 def gv = null  // Initialize gv
 pipeline {
