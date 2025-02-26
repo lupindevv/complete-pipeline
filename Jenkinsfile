@@ -49,7 +49,7 @@ pipeline {
                 }
             }
         }
-        stage('Create JAR Reference') {
+        stage('Create JAR References') {
             steps {
                 script {
                     // Create reference to the JAR file AFTER building with the new version
