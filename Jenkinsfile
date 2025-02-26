@@ -1,4 +1,4 @@
-@Library('jenkins-sl') _
+@Library('my-shared-library') _
 
 def gv = null  // Initialize gv
 pipeline {
@@ -11,13 +11,6 @@ pipeline {
             steps {
                 script {
                     gv = load "script.groovy"
-                }
-            }
-        }
-        stage('Build JAR File') {
-            steps {
-                script {
-                    gv.buildJar()
                 }
             }
         }
@@ -43,17 +36,29 @@ pipeline {
                         incrementType: 'major'
                     )
                     
-                    // Create reference to the JAR file
-                    jarReference(
-                        jarBaseName: projectName,
-                        version: newVersion,
-                        targetPath: 'target',
-                        artifactPath: 'target'
-                    )
-                    
                     // Store version and project name for later use
                     env.APP_VERSION = newVersion
                     env.PROJECT_NAME = projectName
+                }
+            }
+        }
+        stage('Build JAR File') {
+            steps {
+                script {
+                    gv.buildJar()
+                }
+            }
+        }
+        stage('Create JAR Reference') {
+            steps {
+                script {
+                    // Create reference to the JAR file AFTER building with the new version
+                    jarReference(
+                        jarBaseName: env.PROJECT_NAME,
+                        version: env.APP_VERSION,
+                        targetPath: 'target',
+                        artifactPath: 'target'
+                    )
                 }
             }
         }
